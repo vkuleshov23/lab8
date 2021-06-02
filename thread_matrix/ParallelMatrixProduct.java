@@ -9,7 +9,7 @@ public class ParallelMatrixProduct{
 	protected int threadNum;
 
 	public ParallelMatrixProduct(int threadNum){
-		if(threadNum != 0){
+		if(threadNum > 0){
 			this.threadNum = threadNum;
 		} else {
 			MatrixException e = new MatrixException("Bad num of threads"); throw e;
