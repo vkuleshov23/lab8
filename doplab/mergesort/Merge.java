@@ -1,26 +1,26 @@
 package prog.lab8.doplab.mergesort;
 
-import java.util.LinkedList;
-// import java.util.Iterator;
-// import java.util.ListIterator;
+import java.util.Comparator;
 
-public class Merge extends Thread {
+public class Merge<T> extends Thread {
 	private int from, to;
-	private int[] result, arr;
+	private T[] result, arr;
+	private Comparator<T> comp;
 
 	public int getLength(){
 		return result.length;
 	}
 	//-----------------------------------//
-	public int get(int i){
-		return result[i];
+	public T get(int i){
+		return (T)result[i];
 	}
-
-	public Merge(int[] arr, int from, int to){
-		result = new int[to - from + 1];
+	@SuppressWarnings("unchecked")
+	public Merge(T[] arr, int from, int to, Comparator<T> comp){
+		result = (T[])new Object[to - from + 1];
 		this.arr = arr;
 		this.from = from;
 		this.to = to;
+		this.comp = comp;
 	}
 	private void mergeSort(int from, int to){
 	    if (from >= to) return;
@@ -30,9 +30,10 @@ public class Merge extends Thread {
     	mergeSort(mid+1, to);
     	merge(from, mid, to);
 	}
+	@SuppressWarnings("unchecked")
 	public void merge(int from, int mid, int to) {
-	    int leftArray[] = new int[mid - from + 1];
-	    int rightArray[] = new int[to - mid];
+	    T leftArray[] = (T[])new Object[mid - from + 1];
+	    T rightArray[] = (T[])new Object[to - mid];
 
 	    for (int i = 0; i < leftArray.length; i++)
 	        leftArray[i] = arr[from + i];
@@ -44,7 +45,7 @@ public class Merge extends Thread {
 
 	    for (int i = from; i < to + 1; i++) {
 	        if (leftIndex < leftArray.length && rightIndex < rightArray.length) {
-	            if (leftArray[leftIndex] < rightArray[rightIndex]) {
+	            if (comp.compare(leftArray[leftIndex], rightArray[rightIndex]) < 0) {
 	               arr[i] = leftArray[leftIndex];
 	               leftIndex++;
 	            } else {

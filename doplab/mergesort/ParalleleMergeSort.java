@@ -1,14 +1,17 @@
 package prog.lab8.doplab.mergesort;
+import java.util.Comparator;
 
-public class ParalleleMergeSort{
 
-	public static void mergeSort(int[] arr, int threadNum) throws RuntimeException{
+public class ParalleleMergeSort<T>{
+
+	public ParalleleMergeSort(){}
+
+	@SuppressWarnings("unchecked")
+	public void mergeSort(T[] arr, int threadNum, Comparator<T> comp) throws RuntimeException{
 		if(threadNum < 0 && threadNum > arr.length){
 			
 			throw new RuntimeException("ivalid thread number");
 		}
-		//-------- int[] res = new int[arr.length];
-
 
 		int curThreadsNum = threadNum;
 		if(curThreadsNum > arr.length) {
@@ -24,7 +27,7 @@ public class ParalleleMergeSort{
 		for(int i = 0; i < curThreadsNum; i++){
 			int calcQuant = ((remainder > 0) ? sizePerThread + 1 : sizePerThread);
 			remainder--;
-			threads[i] = new Merge(arr, pointer, pointer + calcQuant - 1);
+			threads[i] = new Merge(arr, pointer, pointer + calcQuant - 1, comp);
 			pointer += calcQuant;
 			threads[i].start();
 		}
@@ -38,20 +41,20 @@ public class ParalleleMergeSort{
 				threadIndex[i] = 0;
 			}
 
-			int item = -1;
+			T item = null;
 			int indexOfThreadElement = 0;
 
 			for(int i = 0; i < arr.length; i++){
-				item = -1;
+				item = null;
 				indexOfThreadElement = 0;
 				for(int j = 0; j < curThreadsNum; j++){
 					if(threadIndex[j] < threads[j].getLength()){
-						if(item < 0){
-							item = threads[j].get(threadIndex[j]);
+						if(item == null){
+							item = (T)threads[j].get(threadIndex[j]);
 							indexOfThreadElement = j;
 						}
-						else if(threads[j].get(threadIndex[j]) < item){
-							item = threads[j].get(threadIndex[j]);
+						else if(comp.compare((T)(threads[j].get(threadIndex[j])), item) < 0){
+							item = (T)threads[j].get(threadIndex[j]);
 							indexOfThreadElement = j;
 						}
 					}
